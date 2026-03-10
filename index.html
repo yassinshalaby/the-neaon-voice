@@ -43,11 +43,40 @@
 
     h1 {
       font-family: var(--font-display);
-      color: var(--accent);
+      color: #ffffff;
       margin: 0;
       font-size: 2.5rem;
       letter-spacing: 2px;
       font-weight: 700;
+      text-shadow: 
+        0 0 5px #fff,
+        0 0 10px #fff,
+        0 0 20px var(--accent),
+        0 0 40px var(--accent),
+        0 0 80px var(--accent),
+        0 0 100px var(--accent);
+      animation: neonPulse 2s infinite alternate;
+    }
+
+    @keyframes neonPulse {
+      0%, 100% {
+        text-shadow: 
+          0 0 5px #fff,
+          0 0 10px #fff,
+          0 0 20px var(--accent),
+          0 0 40px var(--accent),
+          0 0 80px var(--accent),
+          0 0 100px var(--accent);
+      }
+      50% {
+        text-shadow: 
+          0 0 2px #fff,
+          0 0 5px #fff,
+          0 0 10px var(--accent),
+          0 0 20px var(--accent),
+          0 0 40px var(--accent),
+          0 0 60px var(--accent);
+      }
     }
 
     header p {
