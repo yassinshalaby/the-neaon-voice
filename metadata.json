@@ -1,0 +1,5 @@
+{
+  "name": "Neon Fuse",
+  "description": "A dark, minimal, brutalist-tech landing page for recording audio and receiving transcribed text via a webhook.",
+  "requestFramePermissions": ["microphone"]
+}
