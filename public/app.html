@@ -1,0 +1,813 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Neon Fuse</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0A0A0A;
+      --surface: #111111;
+      --border: #222222;
+      --text-primary: #FFFFFF;
+      --text-muted: #888888;
+      --accent: #F5C518;
+      --danger: #FF4444;
+      --font-display: 'Space Mono', monospace;
+      --font-body: 'Inter', sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text-primary);
+      font-family: var(--font-body);
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    header {
+      text-align: center;
+      padding: 60px 20px 40px;
+    }
+
+    h1 {
+      font-family: var(--font-display);
+      color: #ffffff;
+      margin: 0;
+      font-size: 2.5rem;
+      letter-spacing: 2px;
+      font-weight: 700;
+      text-shadow: 
+        0 0 5px #fff,
+        0 0 10px #fff,
+        0 0 20px var(--accent),
+        0 0 40px var(--accent),
+        0 0 80px var(--accent),
+        0 0 100px var(--accent);
+      animation: neonPulse 2s infinite alternate;
+    }
+
+    @keyframes neonPulse {
+      0%, 100% {
+        text-shadow: 
+          0 0 5px #fff,
+          0 0 10px #fff,
+          0 0 20px var(--accent),
+          0 0 40px var(--accent),
+          0 0 80px var(--accent),
+          0 0 100px var(--accent);
+      }
+      50% {
+        text-shadow: 
+          0 0 2px #fff,
+          0 0 5px #fff,
+          0 0 10px var(--accent),
+          0 0 20px var(--accent),
+          0 0 40px var(--accent),
+          0 0 60px var(--accent);
+      }
+    }
+
+    header p {
+      color: var(--text-muted);
+      margin: 10px 0 0 0;
+      font-size: 1rem;
+    }
+
+    main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      max-width: 800px;
+      margin: 0 auto;
+      width: 100%;
+      padding: 0 40px;
+      gap: 40px;
+    }
+
+    .record-zone {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px 0;
+    }
+
+    .response-zone {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      width: 100%;
+      min-height: 400px;
+    }
+
+    .record-button-container {
+      position: relative;
+      width: 120px;
+      height: 120px;
+      margin-bottom: 40px;
+    }
+
+    .record-btn {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      background: transparent;
+      border: 2px solid var(--accent);
+      color: var(--accent);
+      cursor: pointer;
+      position: relative;
+      z-index: 2;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      outline: none;
+    }
+
+    .record-btn:hover {
+      box-shadow: 0 0 20px rgba(245, 197, 24, 0.2);
+    }
+
+    .record-btn.recording {
+      background: var(--danger);
+      border-color: var(--danger);
+      color: var(--text-primary);
+      box-shadow: none;
+    }
+
+    .mic-icon {
+      width: 48px;
+      height: 48px;
+    }
+
+    .pulse-ring {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      border: 2px solid var(--danger);
+      z-index: 1;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .pulse-ring.recording {
+      animation: pulse 1.5s infinite;
+    }
+
+    @keyframes pulse {
+      0% {
+        transform: scale(1);
+        opacity: 0.8;
+      }
+      100% {
+        transform: scale(1.5);
+        opacity: 0;
+      }
+    }
+
+    .waveform {
+      display: flex;
+      gap: 3px;
+      height: 60px;
+      align-items: center;
+      margin-bottom: 24px;
+    }
+
+    .bar {
+      width: 4px;
+      height: 4px;
+      background: #333333;
+      transition: height 0.05s ease, background 0.3s ease;
+      border-radius: 2px;
+    }
+
+    .waveform.recording .bar {
+      background: var(--accent);
+    }
+
+    .status-text {
+      font-size: 1rem;
+      color: var(--text-muted);
+      margin-bottom: 20px;
+      height: 24px;
+      text-align: center;
+    }
+
+    .status-text.recording {
+      color: var(--accent);
+    }
+
+    .status-text.processing {
+      color: var(--accent);
+      animation: pulse-opacity 1s infinite alternate;
+    }
+
+    .status-text.done {
+      color: var(--text-primary);
+    }
+
+    .status-text.error {
+      color: var(--danger);
+    }
+
+    @keyframes pulse-opacity {
+      from { opacity: 0.5; }
+      to { opacity: 1; }
+    }
+
+    .cancel-btn {
+      background: transparent;
+      border: none;
+      color: var(--danger);
+      cursor: pointer;
+      font-family: var(--font-body);
+      font-size: 0.9rem;
+      padding: 8px 16px;
+      transition: opacity 0.2s;
+      outline: none;
+    }
+
+    .cancel-btn:hover {
+      opacity: 0.8;
+    }
+
+    .cancel-btn.hidden {
+      display: none;
+    }
+
+    .response-zone {
+      width: 100%;
+    }
+
+    .response-panel {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      width: 100%;
+      height: 450px;
+      border-radius: 0; /* Brutalist sharp corners */
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      transition: border-color 0.3s ease;
+    }
+
+    .response-panel.flash {
+      border-color: var(--accent);
+    }
+
+    .panel-header {
+      display: flex;
+      justify-content: flex-end;
+      margin-bottom: 16px;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 8px;
+    }
+
+    .word-count {
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .text-display {
+      flex: 1;
+      overflow-y: auto;
+      font-family: var(--font-display);
+      color: var(--text-primary);
+      font-size: 16px;
+      line-height: 1.6;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    /* Custom scrollbar for text display */
+    .text-display::-webkit-scrollbar {
+      width: 8px;
+    }
+    .text-display::-webkit-scrollbar-track {
+      background: var(--bg);
+    }
+    .text-display::-webkit-scrollbar-thumb {
+      background: var(--border);
+    }
+    .text-display::-webkit-scrollbar-thumb:hover {
+      background: #444;
+    }
+
+    .placeholder {
+      color: var(--text-muted);
+    }
+
+    .cursor {
+      color: var(--accent);
+      font-weight: bold;
+      margin-left: 2px;
+    }
+
+    .cursor.blinking {
+      animation: blink 0.5s step-end infinite;
+    }
+
+    .cursor.fade-out {
+      opacity: 0;
+      transition: opacity 1s ease;
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0; }
+    }
+
+    .clear-btn {
+      align-self: flex-end;
+      margin-top: 20px;
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      padding: 8px 16px;
+      cursor: pointer;
+      font-family: var(--font-body);
+      font-size: 0.85rem;
+      transition: all 0.2s ease;
+      outline: none;
+    }
+
+    .clear-btn:hover {
+      border-color: var(--text-primary);
+      color: var(--text-primary);
+    }
+
+    .clear-btn.hidden {
+      display: none;
+    }
+
+    footer {
+      text-align: center;
+      padding: 40px 20px;
+      color: var(--text-muted);
+      font-size: 0.85rem;
+    }
+
+    @media (max-width: 768px) {
+      main {
+        padding: 0 20px;
+        gap: 30px;
+      }
+      
+      .response-panel {
+        height: 350px;
+      }
+      
+      header {
+        padding: 40px 20px 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>NEON FUSE</h1>
+    <p>Speak. We listen.</p>
+  </header>
+
+  <main>
+    <section class="record-zone">
+      <div class="record-button-container">
+        <div class="pulse-ring" id="pulseRing"></div>
+        <button id="recordBtn" class="record-btn" aria-label="Record">
+          <svg class="mic-icon" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5-3c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/>
+          </svg>
+        </button>
+      </div>
+      
+      <div class="status-text" id="statusText">Put the unique views aside.</div>
+      
+      <div class="waveform" id="waveform">
+        <!-- 40 bars injected by JS -->
+      </div>
+      
+      <button id="cancelBtn" class="cancel-btn hidden">✕ Cancel</button>
+    </section>
+
+    <section class="response-zone">
+      <div class="response-panel" id="responsePanel">
+        <div class="panel-header">
+          <span class="word-count" id="wordCountDisplay">0 WORDS</span>
+        </div>
+        <div class="text-display" id="textDisplay">
+          <span class="placeholder">_ Awaiting transmission...</span><span class="cursor blinking">|</span>
+        </div>
+        <button id="clearBtn" class="clear-btn hidden">Clear</button>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    NEON FUSE &copy; 2025
+  </footer>
+
+  <script>
+    // Configuration
+    const WEBHOOK_URL = "https://n8n.srv1337459.hstgr.cloud/webhook/neon";
+    const DEMO_MODE = false; // Set to false in production
+
+    // State
+    let audioCtx;
+    let stream;
+    let mediaRecorder;
+    let audioChunks = [];
+    let analyser;
+    let dataArray;
+    let isRecording = false;
+    let isProcessing = false;
+    let processingInterval;
+    let cursorTimeout;
+
+    // DOM Elements
+    const recordBtn = document.getElementById('recordBtn');
+    const cancelBtn = document.getElementById('cancelBtn');
+    const statusText = document.getElementById('statusText');
+    const waveform = document.getElementById('waveform');
+    const textDisplay = document.getElementById('textDisplay');
+    const clearBtn = document.getElementById('clearBtn');
+    const pulseRing = document.getElementById('pulseRing');
+    const responsePanel = document.getElementById('responsePanel');
+    const wordCountDisplay = document.getElementById('wordCountDisplay');
+
+    // Initialize Waveform Bars
+    const NUM_BARS = 40;
+    for (let i = 0; i < NUM_BARS; i++) {
+      const bar = document.createElement('div');
+      bar.className = 'bar';
+      waveform.appendChild(bar);
+    }
+    const bars = document.querySelectorAll('.bar');
+
+    // Audio Context Initialization
+    function initAudio() {
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+      if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+    }
+
+    // Sound Effects Synthesis
+    function playSound(type) {
+      initAudio();
+      const t = audioCtx.currentTime;
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+
+      if (type === 'start') {
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(440, t);
+        osc.frequency.exponentialRampToValueAtTime(880, t + 0.12);
+        gain.gain.setValueAtTime(0, t);
+        gain.gain.linearRampToValueAtTime(0.3, t + 0.02);
+        gain.gain.exponentialRampToValueAtTime(0.01, t + 0.12);
+        osc.start(t);
+        osc.stop(t + 0.12);
+      } else if (type === 'stop') {
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(880, t);
+        osc.frequency.exponentialRampToValueAtTime(440, t + 0.12);
+        gain.gain.setValueAtTime(0, t);
+        gain.gain.linearRampToValueAtTime(0.3, t + 0.02);
+        gain.gain.exponentialRampToValueAtTime(0.01, t + 0.12);
+        osc.start(t);
+        osc.stop(t + 0.12);
+      } else if (type === 'cancel') {
+        osc.type = 'square';
+        osc.frequency.setValueAtTime(220, t);
+        gain.gain.setValueAtTime(0, t);
+        gain.gain.linearRampToValueAtTime(0.2, t + 0.01);
+        gain.gain.exponentialRampToValueAtTime(0.01, t + 0.08);
+        osc.start(t);
+        osc.stop(t + 0.08);
+
+        const osc2 = audioCtx.createOscillator();
+        const gain2 = audioCtx.createGain();
+        osc2.connect(gain2);
+        gain2.connect(audioCtx.destination);
+        osc2.type = 'square';
+        osc2.frequency.setValueAtTime(180, t + 0.13);
+        gain2.gain.setValueAtTime(0, t + 0.13);
+        gain2.gain.linearRampToValueAtTime(0.2, t + 0.14);
+        gain2.gain.exponentialRampToValueAtTime(0.01, t + 0.21);
+        osc2.start(t + 0.13);
+        osc2.stop(t + 0.21);
+      } else if (type === 'type') {
+        // Keyboard click sound
+        osc.type = 'square';
+        osc.frequency.setValueAtTime(150 + Math.random() * 50, t);
+        const duration = 0.015 + Math.random() * 0.01;
+        gain.gain.setValueAtTime(0, t);
+        gain.gain.linearRampToValueAtTime(0.05 + Math.random() * 0.02, t + 0.002);
+        gain.gain.exponentialRampToValueAtTime(0.001, t + duration);
+        osc.start(t);
+        osc.stop(t + duration);
+      } else if (type === 'complete') {
+        const freqs = [440, 554, 659];
+        freqs.forEach((f, i) => {
+          const o = audioCtx.createOscillator();
+          const g = audioCtx.createGain();
+          o.connect(g);
+          g.connect(audioCtx.destination);
+          o.type = 'sine';
+          const startTime = t + i * 0.1;
+          o.frequency.setValueAtTime(f, startTime);
+          g.gain.setValueAtTime(0, startTime);
+          g.gain.linearRampToValueAtTime(0.25, startTime + 0.02);
+          g.gain.exponentialRampToValueAtTime(0.01, startTime + 0.06);
+          o.start(startTime);
+          o.stop(startTime + 0.06);
+        });
+      }
+    }
+
+    // Microphone and Recording
+    async function startRecording() {
+      initAudio();
+      try {
+        if (!stream) {
+          stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+          const source = audioCtx.createMediaStreamSource(stream);
+          analyser = audioCtx.createAnalyser();
+          analyser.fftSize = 128; // 64 bins
+          source.connect(analyser);
+          dataArray = new Uint8Array(analyser.frequencyBinCount);
+        }
+        
+        audioChunks = [];
+        
+        // Try to use webm, fallback to default
+        let options = { mimeType: 'audio/webm' };
+        if (!MediaRecorder.isTypeSupported('audio/webm')) {
+          options = {}; // Use browser default (e.g., audio/mp4 on Safari)
+        }
+        
+        mediaRecorder = new MediaRecorder(stream, options);
+        mediaRecorder.ondataavailable = e => {
+          if (e.data.size > 0) audioChunks.push(e.data);
+        };
+        mediaRecorder.onstop = () => {
+          if (!isProcessing) return; // Cancelled
+          
+          // Use the actual mimeType the recorder used
+          const actualMimeType = mediaRecorder.mimeType || 'audio/webm';
+          const blob = new Blob(audioChunks, { type: actualMimeType });
+          
+          // Determine file extension
+          const ext = actualMimeType.includes('mp4') ? 'mp4' : (actualMimeType.includes('ogg') ? 'ogg' : 'webm');
+          
+          sendAudio(blob, ext);
+        };
+        
+        mediaRecorder.start(100); // Collect data every 100ms to ensure chunks are gathered
+        isRecording = true;
+        
+        // UI Updates
+        recordBtn.classList.add('recording');
+        pulseRing.classList.add('recording');
+        cancelBtn.classList.remove('hidden');
+        statusText.textContent = "Recording... press again to stop";
+        statusText.className = "status-text recording";
+        waveform.classList.add('recording');
+        
+        playSound('start');
+        visualize();
+      } catch (err) {
+        console.error("Microphone access error:", err);
+        statusText.textContent = "Microphone access denied";
+        statusText.className = "status-text error";
+      }
+    }
+
+    function stopRecording() {
+      if (!isRecording) return;
+      isRecording = false;
+      isProcessing = true;
+      mediaRecorder.stop();
+      
+      // UI Updates
+      recordBtn.classList.remove('recording');
+      pulseRing.classList.remove('recording');
+      cancelBtn.classList.add('hidden');
+      waveform.classList.remove('recording');
+      
+      playSound('stop');
+      startProcessingAnimation();
+    }
+
+    function cancelRecording() {
+      if (!isRecording) return;
+      isRecording = false;
+      isProcessing = false;
+      mediaRecorder.stop();
+      
+      // UI Updates
+      recordBtn.classList.remove('recording');
+      pulseRing.classList.remove('recording');
+      cancelBtn.classList.add('hidden');
+      waveform.classList.remove('recording');
+      statusText.textContent = "Put the unique views aside.";
+      statusText.className = "status-text";
+      
+      playSound('cancel');
+    }
+
+    // Waveform Visualization
+    function visualize() {
+      if (!isRecording) {
+        bars.forEach(bar => bar.style.height = '4px');
+        return;
+      }
+      requestAnimationFrame(visualize);
+      analyser.getByteFrequencyData(dataArray);
+      
+      // Map NUM_BARS to the frequency bins
+      const step = Math.max(1, Math.floor(dataArray.length / NUM_BARS));
+      for (let i = 0; i < NUM_BARS; i++) {
+        const val = dataArray[i * step] || 0;
+        // map 0-255 to 4-60px
+        const height = 4 + (val / 255) * 56;
+        bars[i].style.height = `${height}px`;
+      }
+    }
+
+    // Processing Animation
+    function startProcessingAnimation() {
+      statusText.className = "status-text processing";
+      let dots = 0;
+      processingInterval = setInterval(() => {
+        dots = (dots + 1) % 4;
+        statusText.textContent = "Processing" + ".".repeat(dots);
+      }, 400);
+    }
+
+    function stopProcessingAnimation() {
+      clearInterval(processingInterval);
+    }
+
+    // Webhook Integration
+    async function sendAudio(blob, ext = 'webm') {
+      console.log(`Sending audio blob of size: ${blob.size} bytes, type: ${blob.type}, ext: ${ext}`);
+      
+      if (DEMO_MODE) {
+        setTimeout(() => {
+          stopProcessingAnimation();
+          statusText.textContent = "Done!";
+          statusText.className = "status-text done";
+          const demoText = "This is a demo response from Neon Fuse. Your voice has been converted to text successfully. Replace WEBHOOK_URL and set DEMO_MODE to false to go live.";
+          typewriterEffect(demoText);
+        }, 2000);
+        return;
+      }
+
+      try {
+        const formData = new FormData();
+        // Use 'data' as the field name, which is often the default binary property in n8n
+        formData.append("data", blob, `recording.${ext}`);
+        
+        const response = await fetch(WEBHOOK_URL, {
+          method: "POST",
+          body: formData
+        });
+        
+        if (!response.ok) {
+          let errorBody = "";
+          try {
+            errorBody = await response.text();
+          } catch (e) {
+            // ignore
+          }
+          console.error("Webhook error response body:", errorBody);
+          throw new Error(`HTTP Error ${response.status}: ${response.statusText || errorBody.substring(0, 50)}`);
+        }
+        
+        const contentType = response.headers.get("content-type");
+        let text = "";
+        if (contentType && contentType.includes("application/json")) {
+          const json = await response.json();
+          text = json.text || JSON.stringify(json);
+        } else {
+          text = await response.text();
+        }
+        
+        stopProcessingAnimation();
+        statusText.textContent = "Done!";
+        statusText.className = "status-text done";
+        typewriterEffect(text);
+        
+      } catch (err) {
+        console.error("Webhook error:", err);
+        stopProcessingAnimation();
+        
+        let errorMessage = err.message;
+        if (errorMessage === "Failed to fetch") {
+          errorMessage = "CORS Error: n8n is blocking the request. Enable 'Respond to HTTP OPTIONS' in your Webhook node.";
+        }
+        
+        // Show the actual error message in the UI so the user knows if it's CORS or Network
+        statusText.textContent = "Error: " + errorMessage;
+        statusText.className = "status-text error";
+        playSound('cancel');
+      }
+    }
+
+    // Typewriter Effect
+    function typewriterEffect(text) {
+      clearTimeout(cursorTimeout);
+      textDisplay.innerHTML = '<span class="text-content"></span><span class="cursor blinking">|</span>';
+      const contentSpan = textDisplay.querySelector('.text-content');
+      const cursorSpan = textDisplay.querySelector('.cursor');
+      clearBtn.classList.add('hidden');
+      wordCountDisplay.textContent = "0 WORDS";
+      
+      // Flash border
+      responsePanel.classList.add('flash');
+      setTimeout(() => responsePanel.classList.remove('flash'), 300);
+      
+      let i = 0;
+      function typeChar() {
+        if (i < text.length) {
+          const char = text.charAt(i);
+          contentSpan.textContent += char;
+          
+          // Update word count on space or at the end
+          if (char === ' ' || char === '\n' || i === text.length - 1) {
+            const words = contentSpan.textContent.trim().split(/\s+/).filter(w => w.length > 0);
+            wordCountDisplay.textContent = `${words.length} WORD${words.length !== 1 ? 'S' : ''}`;
+          }
+
+          playSound('type');
+          i++;
+          textDisplay.scrollTop = textDisplay.scrollHeight;
+          setTimeout(typeChar, 35);
+        } else {
+          playSound('complete');
+          clearBtn.classList.remove('hidden');
+          cursorTimeout = setTimeout(() => {
+            cursorSpan.classList.remove('blinking');
+            cursorSpan.classList.add('fade-out');
+          }, 3000);
+        }
+      }
+      typeChar();
+    }
+
+    // Event Listeners
+    recordBtn.addEventListener('click', () => {
+      if (isRecording) {
+        stopRecording();
+      } else {
+        startRecording();
+      }
+    });
+
+    cancelBtn.addEventListener('click', cancelRecording);
+
+    clearBtn.addEventListener('click', () => {
+      textDisplay.innerHTML = '<span class="placeholder">_ Awaiting transmission...</span><span class="cursor blinking">|</span>';
+      clearBtn.classList.add('hidden');
+      statusText.textContent = "Put the unique views aside.";
+      statusText.className = "status-text";
+      wordCountDisplay.textContent = "0 WORDS";
+    });
+
+    // Cleanup on unload
+    window.addEventListener('beforeunload', () => {
+      if (stream) {
+        stream.getTracks().forEach(track => track.stop());
+      }
+    });
+  </script>
+</body>
+</html>
